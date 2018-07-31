@@ -43,18 +43,49 @@ columns, so the output looks better.
 
 import random
 import sys
+import re
+from collections import OrderedDict
 
 
 def mimic_dict(filename):
   """Returns mimic dict mapping each word to list of words which follow it."""
+  with open(filename, 'r+') as myfile:
+    data=myfile.read().replace('\n', ' ')
+  temp_list = data.lower().split(' ') 
+  word_list=[re.sub('[^a-z0-9]+', '', "'"+word+"'")  for word in temp_list if word]
+  print word_list   
+  mimic = {"":[word_list[0]]}
+  for i in range(0,len(word_list)):
+      if word_list[i] in mimic and i<len(word_list)-1:
+         mimic[word_list[i]].append(word_list[i+1])
+      else:
+         mimic[word_list[i]]=[]
+         if i<len(word_list)-1:
+            mimic[word_list[i]].append(word_list[i+1])   
+       
   # +++your code here+++
-  return
+  print (mimic)
+  return mimic
 
 
 def print_mimic(mimic_dict, word):
   """Given mimic dict and start word, prints 200 random words."""
   # +++your code here+++
-  return
+  #  for key, val in mimic_dict.iteritems() if key.startswith(word))
+  # for k,v in mimic_dict.items():
+  #       print k,' - ',v 
+  result = ["1. "+ word ]
+  for i in range (2,201):
+     tempword = '' 
+     if word in mimic_dict:
+        if mimic_dict[word]:
+           print (mimic_dict[word])
+           tempword = random.choice(mimic_dict[word])  
+           print tempword 
+     result.append(str(i) +'. '+ tempword)    
+     word = tempword
+  print result
+  return result
 
 
 # Provided main(), calls mimic_dict() and mimic()
@@ -62,10 +93,8 @@ def main():
   if len(sys.argv) != 2:
     print 'usage: ./mimic.py file-to-read'
     sys.exit(1)
-
   dict = mimic_dict(sys.argv[1])
-  print_mimic(dict, '')
-
+  print_mimic(dict, 'in')
 
 if __name__ == '__main__':
   main()
